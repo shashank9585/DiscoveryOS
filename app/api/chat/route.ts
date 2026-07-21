@@ -33,35 +33,34 @@ export async function POST(request: NextRequest) {
 
     const contextStr = JSON.stringify(context, null, 2);
 
-    const prompt = `You are an AI Product Intelligence Assistant for DiscoveryOS. You answer questions about customer feedback data that has been analyzed and extracted from real documents.
+    // Updated conversational prompt that STILL enforces JSON output for the frontend
+    const prompt = `You are an expert, conversational Product Intelligence Assistant. Your goal is to help the user understand their customer data naturally and insightfully.
 
-Here is the ACTUAL data from uploaded documents:
+STRICT RULES FOR YOUR RESPONSES:
+1. Be conversational, professional, and concise. Do not sound like a rigid robot.
+2. Directly answer the user's specific question first, then provide brief, relevant context.
+3. Do NOT just list the same pain points or percentages repeatedly. Synthesize the information naturally.
+4. If the user asks "why", explain the root cause based on the data, don't just repeat the stats.
+5. Use natural language. Avoid excessive bolding or bullet points unless the user specifically asks for a list.
+6. If you don't know the answer based on the provided data, politely say so and suggest what might help.
+
+Here is the context from the user's uploaded documents:
 ${contextStr}
-
-Documents analyzed: ${context.documentNames.join(', ')}
 
 User Question: ${question}
 
-Instructions:
-- Answer ONLY based on the actual data provided above. 
-- If the data doesn't contain information relevant to the question, say so clearly.
-- Cite specific evidence (pain points, sentiment data, document names) to support your answers.
-- Be concise and data-driven.
-- Include confidence levels where appropriate.
-- Format with markdown for readability (bold, bullet points, etc.)
-
-Return ONLY valid JSON (no markdown fences):
+You MUST return ONLY valid JSON matching this exact schema. Do not include markdown formatting like \`\`\`json.
 {
-  "answer": "Your detailed answer here with markdown formatting",
+  "answer": "Your detailed, conversational answer here",
   "sources": ["document names or data categories used to answer"],
-  "confidence": <0.0 to 1.0 based on how well the data supports the answer>
+  "confidence": 0.85
 }`;
 
     const completion = await groq.chat.completions.create({
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful AI assistant that answers questions about product intelligence data and returns strictly formatted JSON responses.'
+          content: 'You are a helpful AI assistant that answers questions about product intelligence data conversationally and returns strictly formatted JSON responses.'
         },
         {
           role: 'user',
@@ -69,7 +68,7 @@ Return ONLY valid JSON (no markdown fences):
         }
       ],
       model: 'llama-3.3-70b-versatile',
-      temperature: 0.4,
+      temperature: 0.6, // Balanced for natural conversation while maintaining JSON structure
       response_format: { type: "json_object" }
     });
 
