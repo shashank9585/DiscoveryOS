@@ -1,235 +1,568 @@
-## ✨ DiscoveryOS - AI Product Intelligence Platform
+<div align="center">
 
-A premium SaaS application that transforms scattered customer feedback into evidence-backed product decisions.
+# 🚀 DiscoveryOS
 
-### 🚀 Quick Start
+### AI Product Discovery & User Research Intelligence Platform
 
-```bash
-cd discovery-os
-npm install
-npm run dev
-```
+**Transform scattered customer feedback into evidence-backed product decisions.**
 
-Then open **http://localhost:3000** in your browser.
+Built for the **Product Space × CodeBenders Agentic AI Hackathon 2026**
 
-### 📋 What's Included (MVP Complete)
+<br>
 
-#### ✅ **Core Pages**
-- **Executive Dashboard** (/) - KPIs, Pain Points, Recent Uploads
-- **Customer Insights** (/insights) - Pain point clusters, themes, sentiment analysis
-- **Product Analytics** (/analytics) - Feature adoption, funnel analysis, conversion trends
-- **Risk Dashboard** (/risk) - Churn risks, adoption drops, sentiment spikes
-- **AI Reports** (/reports) - Auto-generated product discovery and roadmap recommendations
-- **File Upload** (/upload) - Drag-drop interface for PDFs, TXT, CSV, DOCX
-- **Projects** (/projects) - Project management
-- **Settings** (/settings) - Configuration and preferences
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38BDF8?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
+[![Groq](https://img.shields.io/badge/Groq-Llama%203.3-orange?style=for-the-badge)](https://groq.com/)
+[![Vercel](https://img.shields.io/badge/Hosted-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/)
 
-#### ✅ **UI/UX Features**
-- Dark mode & light mode toggle
-- Responsive layout (desktop-first)
-- Premium SaaS design with Tailwind CSS
-- Sidebar navigation
-- Top navigation bar with theme switcher
-- Loading states & error handling
-- KPI cards with trend indicators
-- Charts (using Recharts)
-- Data tables and lists
+### 🌐 Live Demo
 
-#### ✅ **File Processing**
-- Support for: PDF, TXT, CSV, DOCX files
-- File validation (50MB size limit)
-- Text chunking for AI processing
-- Drag-drop upload UI
-- Upload progress tracking
+https://discoveryos-weld.vercel.app/
 
-#### ✅ **Sample Data**
-- Mock dashboard data with realistic metrics
-- Sample pain points, insights, and feedback
-- Analytics data (conversion rates, bounce rates, churn)
-- Risk indicators
-- Generated reports
-
-#### ✅ **Components**
-- KPI Cards (with trends)
-- Pain Points Card
-- Upload Status Card
-- Theme Provider (dark/light mode)
-- Sidebar with navigation
-- Top navigation bar
-- Layout wrapper
-
-### 🔧 Tech Stack
-
-- **Frontend:** Next.js 16+ with TypeScript
-- **Styling:** Tailwind CSS v4
-- **UI Components:** Custom built + Lucide React icons
-- **Charts:** Recharts
-- **State Management:** React hooks
-- **Package Manager:** npm
-
-### 📦 Project Structure
-
-```
-discovery-os/
-├── app/                         # Next.js App Router
-│   ├── page.tsx                 # Executive Dashboard
-│   ├── insights/page.tsx        # Customer Insights
-│   ├── analytics/page.tsx       # Product Analytics
-│   ├── risk/page.tsx           # Risk Dashboard
-│   ├── reports/page.tsx        # AI Reports
-│   ├── upload/page.tsx         # File Upload
-│   ├── projects/page.tsx       # Projects
-│   ├── settings/page.tsx       # Settings
-│   ├── api/upload/route.ts     # Upload API
-│   ├── layout.tsx              # Root layout
-│   └── globals.css             # Global styles
-├── components/
-│   ├── layout/
-│   │   ├── Layout.tsx          # Main layout wrapper
-│   │   ├── Sidebar.tsx         # Navigation sidebar
-│   │   └── TopNav.tsx          # Top navigation bar
-│   ├── dashboard/
-│   │   ├── KPICard.tsx         # KPI metric card
-│   │   ├── PainPointsCard.tsx  # Pain points display
-│   │   └── UploadStatus.tsx    # Recent uploads
-│   ├── UploadZone.tsx          # File upload component
-│   └── ui/button.tsx           # Reusable button
-├── lib/
-│   ├── types.ts                # TypeScript interfaces
-│   ├── utils.ts                # Utility functions
-│   ├── sampleData.ts           # Mock data generator
-│   ├── fileParser.ts           # File parsing utilities
-│   ├── aiService.ts            # AI integration service
-│   ├── db.ts                   # Database types
-│   └── supabase.ts             # Supabase client
-├── public/                      # Static assets
-├── next.config.js              # Next.js configuration
-├── tailwind.config.ts          # Tailwind configuration
-├── tsconfig.json               # TypeScript configuration
-└── package.json                # Dependencies
-
-```
-
-### 🎯 Features Breakdown
-
-**Module 1: Foundation** ✅
-- Next.js setup with TypeScript & Tailwind
-- Navigation and layout components
-- Dark mode support
-- 8 main pages
-
-**Module 2: Dashboard** ✅
-- Executive dashboard with KPIs
-- Sample data generation
-- Charts and visualizations
-- Responsive grid layout
-
-**Module 3: File Upload** ✅
-- Drag-drop file upload
-- File validation
-- Progress tracking
-- Support for PDF, TXT, CSV, DOCX
-
-**Module 4: AI Processing** (Ready for implementation)
-- Pain point extraction
-- Theme clustering
-- Sentiment analysis
-- Confidence scoring
-- Requires: OpenAI/Claude API key
-
-**Module 5: AI Query Assistant** (Ready for implementation)
-- Natural language questions
-- RAG-powered answers
-- Evidence-backed responses
-- Requires: Vector embeddings
-
-**Module 6+: Advanced Features** (Future)
-- Analytics correlation
-- Risk monitoring
-- Report generation
-- Sticky notes collaboration
-- Meeting intelligence
-
-### 🔐 Environment Variables
-
-Create `.env.local`:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-OPENAI_API_KEY=sk-...
-```
-
-### 🚀 Next Steps to Complete the MVP
-
-1. **Integrate OpenAI/Claude API** for AI processing
-2. **Setup Supabase PostgreSQL** for data persistence
-3. **Implement vector embeddings** with pgvector
-4. **Build RAG pipeline** for query assistant
-5. **Deploy to Vercel** for public access
-6. **Add authentication** (optional for hackathon)
-
-### 📊 Current Capabilities
-
-✅ File upload and processing  
-✅ Dashboard visualization  
-✅ Sample data display  
-✅ Dark/light mode  
-✅ Responsive design  
-✅ Navigation structure  
-
-⏳ In Development:
-- AI inference (waiting for LLM choice)
-- Database integration (waiting for Supabase setup)
-- Real analytics correlation  
-- Report generation  
-
-### 🤝 Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Frontend (Next.js)                    │
-│  Dashboard | Insights | Analytics | Risk | Reports      │
-└──────────────────────┬──────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│              API Routes & Services                       │
-│  Upload | Process | Query | Analyze | Generate          │
-└──────────────────────┬──────────────────────────────────┘
-                       │
-           ┌───────────┼───────────┐
-           ▼           ▼           ▼
-      ┌────────┐ ┌──────────┐ ┌────────┐
-      │Supabase│ │OpenAI/  │ │pgvector│
-      │ PostgreSQL│ Claude  │ │Embeddings│
-      └────────┘ └──────────┘ └────────┘
-```
-
-### 📝 Notes
-
-- This is a hackathon MVP with focus on UI and core functionality
-- Sample data is used for demo purposes
-- Real AI integration requires API keys
-- Database integration requires Supabase project
-- All components are production-ready and can be extended
-
-### 🎨 Design Philosophy
-
-- Premium SaaS aesthetic
-- Data-forward interface
-- Evidence-based insights
-- User-centric workflows
-- Performance-optimized
-- Accessibility-friendly
-
-### 📱 Browser Support
-
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-- Mobile browsers (responsive design)
+</div>
 
 ---
 
-**Built with ❤️ for the AI Agent Hackathon**
+# 📖 Overview
+
+Product teams receive customer feedback from dozens of different sources every day—customer interviews, support tickets, surveys, feature requests, meeting notes, analytics platforms, research documents, and internal discussions.
+
+While this information is valuable, it usually remains scattered across multiple tools and formats. By the time roadmap planning begins, teams often rely on assumptions or memory instead of actual customer evidence.
+
+**DiscoveryOS** solves this challenge by acting as an AI-powered Product Intelligence platform that converts unstructured customer feedback into structured insights, identifies recurring customer problems, correlates qualitative feedback with quantitative analytics, and generates evidence-backed recommendations for better product decisions.
+
+Instead of simply summarizing documents, DiscoveryOS helps product teams discover **what customers truly need, why it matters, and what should be built next.**
+
+---
+
+# 🎯 The Problem
+
+Modern product organizations constantly collect customer knowledge from:
+
+- Customer Interviews
+- Product Research
+- Support Tickets
+- Feature Requests
+- Survey Responses
+- Meeting Notes
+- Product Analytics
+- Internal Documentation
+
+Unfortunately these insights remain fragmented.
+
+As a result,
+
+- Teams manually read hundreds of documents.
+- Important insights get lost.
+- Roadmaps are based on opinions instead of evidence.
+- Engineering effort is often spent solving lower-impact problems.
+- Product managers struggle to connect customer feedback with business metrics.
+
+---
+
+# 💡 Our Solution
+
+DiscoveryOS brings every research source into one intelligent workspace.
+
+Using AI, it automatically:
+
+- Extracts customer pain points
+- Groups similar feedback into themes
+- Detects customer personas
+- Performs sentiment analysis
+- Measures issue frequency
+- Correlates customer feedback with analytics
+- Prioritizes opportunities based on business impact
+- Generates executive-ready product reports
+
+The result is a centralized Product Intelligence platform that helps organizations make faster and smarter roadmap decisions.
+
+---
+
+# ✨ Key Features
+
+## 📂 Multi-source Research Upload
+
+Upload research from multiple sources including:
+
+- PDF
+- DOCX
+- TXT
+- CSV
+
+The platform parses documents and prepares them for AI processing.
+
+---
+
+## 🧠 AI Insight Engine
+
+Powered using **Groq Llama 3.3** for high-speed inference.
+
+The AI automatically identifies:
+
+- Customer Pain Points
+- Product Themes
+- User Personas
+- Feature Requests
+- Sentiment
+- Business Impact
+- Confidence Scores
+- Executive Recommendations
+
+Rather than generating simple summaries, DiscoveryOS produces structured product intelligence.
+
+---
+
+## 📊 Executive Dashboard
+
+A centralized dashboard designed for Product Managers and leadership teams.
+
+Monitor:
+
+- Product Health Score
+- Customer Satisfaction
+- AI Confidence
+- Active Product Risks
+- Top Customer Pain Points
+- Recent Upload Activity
+- Executive KPIs
+
+---
+
+## 📈 Product Analytics Dashboard
+
+Bridge qualitative customer feedback with quantitative analytics.
+
+Track metrics such as:
+
+- Bounce Rate
+- Conversion Rate
+- Churn
+- Session Duration
+- Funnel Drop-offs
+
+The platform correlates analytics data with customer conversations to identify the true causes behind product issues.
+
+Example:
+
+Customer complains about onboarding
+
+⬇
+
+Analytics show 67% signup drop-off
+
+⬇
+
+DiscoveryOS recommends onboarding redesign as highest priority.
+
+---
+
+## 💬 Customer Insights Dashboard
+
+Explore customer intelligence through:
+
+- Pain Point Frequency
+- Theme Distribution
+- Persona Analysis
+- Sentiment Breakdown
+- Confidence Scores
+- Search & Filters
+
+Helping teams quickly understand what customers consistently experience.
+
+---
+
+## ⚠️ AI Risk Intelligence
+
+Detect business risks before they become critical.
+
+Examples include:
+
+- Rising Churn
+- Negative Sentiment Growth
+- Feature Adoption Decline
+- Increasing Support Volume
+
+Each risk includes:
+
+- Severity
+- Confidence
+- Timeline
+- Business Impact
+- Recommended Actions
+
+---
+
+## 📑 AI Reports
+
+Automatically generate executive-ready reports containing:
+
+- Executive Summary
+- Product Health
+- Top Pain Points
+- Customer Segments
+- Risk Analysis
+- Recommendations
+- Suggested Roadmap Priorities
+
+Designed for Product Managers, Leadership Teams, and Stakeholders.
+
+---
+
+## 📁 Project Workspace
+
+Manage research project-wise.
+
+Each project stores:
+
+- Uploaded Files
+- Insights
+- Reports
+- Analytics
+- AI Recommendations
+
+---
+
+## 🤖 AI Assistant
+
+Ask natural language questions such as:
+
+> Why are customers dropping during onboarding?
+
+> What should we prioritize next sprint?
+
+> Which customer segment is most affected?
+
+The assistant responds with evidence-backed answers generated from uploaded research.
+
+---
+
+## ⚙️ Settings
+
+Configure:
+
+- API Keys
+- AI Provider
+- Preferences
+- Notifications
+
+---
+
+# 🔄 AI Workflow
+
+```text
+Customer Interviews
+Support Tickets
+Survey Responses
+Meeting Notes
+Analytics Data
+Research Documents
+
+           │
+
+           ▼
+
+    Upload Research Files
+
+           │
+
+           ▼
+
+      Document Parsing
+
+           │
+
+           ▼
+
+      Groq AI Processing
+
+           │
+
+           ▼
+
+   Pain Point Extraction
+
+           │
+
+           ▼
+
+     Theme Clustering
+
+           │
+
+           ▼
+
+ Persona Identification
+
+           │
+
+           ▼
+
+   Sentiment Analysis
+
+           │
+
+           ▼
+
+ Business Impact Scoring
+
+           │
+
+           ▼
+
+ Executive Dashboards
+
+           │
+
+           ▼
+
+ Evidence-backed Recommendations
+```
+
+---
+
+# 🏗️ System Architecture
+
+```text
+                    DiscoveryOS
+
+                    Frontend
+               (Next.js + React)
+
+                        │
+
+                        ▼
+
+              File Upload & Parsing
+
+                        │
+
+                        ▼
+
+             Groq Llama 3.3 AI Engine
+
+                        │
+
+                        ▼
+
+          Insight Extraction Pipeline
+
+        ├── Pain Points
+        ├── Themes
+        ├── Personas
+        ├── Sentiment
+        ├── Recommendations
+
+                        │
+
+                        ▼
+
+          Executive Dashboards & Reports
+
+                        │
+
+                        ▼
+
+              AI Query Assistant
+```
+
+---
+
+# 🛠️ Technology Stack
+
+| Category | Technology |
+|------------|------------|
+| Frontend | Next.js 16 |
+| UI | React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 |
+| Icons | Lucide React |
+| Charts | Recharts |
+| AI | Groq API (Llama 3.3 70B Versatile) |
+| File Parsing | pdf-parse, mammoth, papaparse |
+| State Management | Zustand |
+| Deployment | Vercel |
+
+---
+
+# 📂 Project Structure
+
+```text
+DiscoveryOS/
+
+├── app/
+│   ├── Dashboard
+│   ├── Analytics
+│   ├── Insights
+│   ├── Risk
+│   ├── Reports
+│   ├── Upload
+│   ├── Projects
+│   ├── Settings
+│   └── API Routes
+│
+├── components/
+│
+├── lib/
+│
+├── public/
+│
+├── styles/
+│
+└── configuration files
+```
+
+---
+
+# 🚀 Getting Started
+
+Clone the repository
+
+```bash
+git clone https://github.com/shashank9585/DiscoveryOS.git
+```
+
+Move into the project
+
+```bash
+cd DiscoveryOS
+```
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Create a `.env.local` file
+
+```env
+GROQ_API_KEY=YOUR_API_KEY
+```
+
+Run locally
+
+```bash
+npm run dev
+```
+
+Visit
+
+```
+http://localhost:3000
+```
+
+---
+
+# 📦 Current MVP
+
+✅ Executive Dashboard
+
+✅ Customer Insights
+
+✅ Product Analytics
+
+✅ Risk Dashboard
+
+✅ AI Reports
+
+✅ AI Assistant
+
+✅ Project Workspace
+
+✅ File Upload
+
+✅ Responsive Design
+
+✅ Dark Mode
+
+✅ Groq AI Integration
+
+✅ Multi-format File Parsing
+
+---
+
+# 🚀 Future Roadmap
+
+- Google Analytics Integration
+- Jira Integration
+- Zendesk Integration
+- Slack Integration
+- Notion Integration
+- Google Meet Transcript Import
+- Google Calendar Action Items
+- Team Collaboration
+- Sticky Notes Workspace
+- Vector Search (pgvector)
+- Sprint Planning Assistant
+- PRD Generation
+- AI Roadmap Builder
+- Multi-user Workspaces
+
+---
+
+# 🎯 Target Users
+
+- Product Managers
+- Startup Founders
+- Product Teams
+- UX Researchers
+- Customer Success Teams
+- Product Analysts
+
+---
+
+# 🏆 Hackathon Submission
+
+**Hackathon**
+
+**Product Space × CodeBenders Agentic AI Hackathon 2026**
+
+### Submission Includes
+
+- ✅ Working AI Prototype
+- ✅ Live Deployment
+- ✅ AI-powered Insight Extraction
+- ✅ Executive Dashboards
+- ✅ Product Analytics
+- ✅ Risk Intelligence
+- ✅ AI Reports
+- ✅ Responsive SaaS Interface
+
+---
+
+# 👨‍💻 Developer
+
+## Shashank H E
+
+AI Builder • Product Developer • Full Stack Developer
+
+**GitHub**
+
+https://github.com/shashank9585
+
+**LinkedIn**
+
+https://www.linkedin.com/in/shashank-h-e/
+
+---
+
+# 💭 Vision
+
+> Product teams shouldn't spend hours searching for customer feedback.
+
+> They should spend their time building products customers truly need.
+
+**DiscoveryOS transforms scattered customer conversations into actionable product intelligence—helping teams build with confidence, backed by evidence instead of assumptions.**
+
+---
+
+<div align="center">
+
+### ⭐ If you found this project interesting, consider giving it a Star!
+
+**Built with ❤️ for the Product Space × CodeBenders Agentic AI Hackathon 2026**
+
+</div>
