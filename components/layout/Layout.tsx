@@ -6,7 +6,7 @@ import { AIAssistant } from '../AIAssistant';
 import { useState } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [showAI, setShowAI] = useState(true);
+  const [showAI, setShowAI] = useState(false);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-50 dark:bg-slate-900">

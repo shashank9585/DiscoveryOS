@@ -150,7 +150,7 @@ export default function InsightsPage() {
                           <p className="font-medium text-sm text-slate-900 dark:text-white">{pp.issue}</p>
                           <div className="flex justify-between mt-2 text-xs text-slate-600 dark:text-slate-400">
                             <span>{pp.frequency} mentions</span>
-                            <span>{Math.round(pp.confidence * 100)}% confident</span>
+                            <span>{pp.confidence ? Math.round(pp.confidence * 100) : 'N/A'}% confident</span>
                           </div>
                         </div>
                       ))}
@@ -197,7 +197,7 @@ export default function InsightsPage() {
                   <div key={persona.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
                     <div className="mb-4">
                       <h3 className="font-semibold text-slate-900 dark:text-white">{persona.role}</h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 capitalize">{persona.companySize} company</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 capitalize">{persona.companySize || 'Unknown'} company</p>
                     </div>
                     <div>
                       <p className="text-xs font-medium mb-2 text-slate-700 dark:text-slate-300">Main Pain Points:</p>

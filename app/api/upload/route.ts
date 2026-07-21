@@ -56,20 +56,12 @@ export async function POST(request: NextRequest) {
       const prompt = `You are an expert Product Manager AI. Analyze the following customer feedback and extract insights. Return ONLY valid JSON matching this exact schema. Do not include markdown formatting like \`\`\`json.
 
 {
-  "painPoints": [
-    {"issue": "string", "severity": "low" | "medium" | "high", "frequency": number}
-  ],
-  "themes": [
-    {"name": "string", "description": "string", "relatedPainPoints": ["string"]}
-  ],
-  "personas": ["string"],
-  "risks": [
-    {"name": "string", "severity": "low" | "medium" | "high", "description": "string", "confidence": number}
-  ],
-  "recommendations": [
-    {"action": "string", "priority": "low" | "medium" | "high", "impact": "string", "effort": "low" | "medium" | "high", "supportingQuotes": ["string"]}
-  ],
-  "sentiment": "positive" | "negative" | "mixed",
+  "painPoints": [{"issue": "string", "severity": "low"|"medium"|"high", "frequency": number, "confidence": number, "evidenceQuotes": ["string"]}],
+  "themes": [{"name": "string", "description": "string", "relatedPainPoints": ["string"], "frequency": number}],
+  "personas": [{"role": "string", "companySize": "string", "sentiment": "positive"|"negative"|"neutral", "mainPainPoints": ["string"], "frequency": number}],
+  "risks": [{"name": "string", "severity": "low"|"medium"|"high", "description": "string", "confidence": number}],
+  "recommendations": [{"action": "string", "priority": "low"|"medium"|"high", "businessImpact": "string", "customerImpact": "string", "effort": "low"|"medium"|"high", "supportingQuotes": ["string"]}],
+  "sentiment": {"overall": "positive"|"negative"|"neutral", "positivePercent": number, "neutralPercent": number, "negativePercent": number},
   "confidence_score": number
 }
 

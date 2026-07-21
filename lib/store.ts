@@ -196,25 +196,25 @@ export const useAppStore = create<AppStore>((set, get) => ({
     // Health Score: based on positive sentiment ratio
     let healthScore = 0;
     if (sentimentResults.length > 0) {
-      const avgPositive = sentimentResults.reduce((sum, s) => sum + s.positivePercent, 0) / sentimentResults.length;
-      const avgNeutral = sentimentResults.reduce((sum, s) => sum + s.neutralPercent, 0) / sentimentResults.length;
-      healthScore = Math.round(avgPositive + (avgNeutral * 0.5));
+      const avgPositive = sentimentResults.reduce((sum, s) => sum + (s.positivePercent || 0), 0) / sentimentResults.length;
+      const avgNeutral = sentimentResults.reduce((sum, s) => sum + (s.neutralPercent || 0), 0) / sentimentResults.length;
+      healthScore = Math.round((avgPositive || 0) + ((avgNeutral || 0) * 0.5));
     }
 
     // Satisfaction Score: weighted positive percentage from sentiment
     let satisfactionScore = 0;
     if (sentimentResults.length > 0) {
       satisfactionScore = Math.round(
-        sentimentResults.reduce((sum, s) => sum + s.positivePercent, 0) / sentimentResults.length
-      );
+        sentimentResults.reduce((sum, s) => sum + (s.positivePercent || 0), 0) / sentimentResults.length
+      ) || 0;
     }
 
     // AI Confidence: average confidence across all insights
     let aiConfidence = 0;
     if (painPoints.length > 0) {
       aiConfidence = Math.round(
-        (painPoints.reduce((sum, p) => sum + p.confidence, 0) / painPoints.length) * 100
-      );
+        (painPoints.reduce((sum, p) => sum + (p.confidence || 0), 0) / painPoints.length) * 100
+      ) || 0;
     }
 
     // Active Issues: count of high/critical severity pain points

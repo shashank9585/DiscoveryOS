@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Loader, MessageCircle, X } from 'lucide-react';
-import { askAI } from '@/lib/llmService';
+import { useAppStore } from '@/lib/store';
 
 interface Message {
   id: string;
@@ -16,7 +16,7 @@ interface AIAssistantProps {
   onClose?: () => void;
 }
 
-export function AIAssistant({ isOpen = true, onClose }: AIAssistantProps) {
+export function AIAssistant({ isOpen = false, onClose }: AIAssistantProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -31,6 +31,9 @@ export function AIAssistant({ isOpen = true, onClose }: AIAssistantProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(isOpen);
   const [mounted, setMounted] = useState(false);
+
+  // Get store data for context
+  const { painPoints, themes, personas, sentimentResults, recommendations, documents } = useAppStore();
 
   // Set mounted flag after hydration
   useEffect(() => {
@@ -64,13 +67,33 @@ export function AIAssistant({ isOpen = true, onClose }: AIAssistantProps) {
     setError(null);
 
     try {
-      // Get AI response
-      const response = await askAI(input);
+      // Build context from store data for RAG
+      const context = {
+        painPoints: painPoints.map(p => ({ issue: p.issue, severity: p.severity, frequency: p.frequency, evidenceQuotes: p.evidenceQuotes })),
+        themes: themes.map(t => ({ name: t.name, description: t.description })),
+        personas: personas.map(p => ({ role: p.role, mainPainPoints: p.mainPainPoints })),
+        sentimentResults: sentimentResults.map(s => ({ overall: s.overall, positivePercent: s.positivePercent, negativePercent: s.negativePercent })),
+        recommendations: recommendations.map(r => ({ action: r.action, priority: r.priority, businessImpact: r.businessImpact })),
+        documentNames: documents.map(d => d.filename),
+      };
 
+      // Call local API route instead of external service (fixes CORS)
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: input, context }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server error: ${response.status}`);
+      }
+
+      const data = await response.json();
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response,
+        content: data.answer || data.response || 'I processed your question but received no response.',
         timestamp: Date.now(),
       };
 

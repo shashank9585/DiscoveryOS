@@ -156,7 +156,7 @@ export default function AnalyticsPage() {
                           {painPoint.frequency} customers mentioned this pain point
                         </p>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Confidence: {Math.round(painPoint.confidence * 100)}%
+                          Confidence: {painPoint.confidence ? Math.round(painPoint.confidence * 100) : 'N/A'}%
                         </p>
                       </div>
                       <div className="text-right">
