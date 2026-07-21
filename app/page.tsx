@@ -245,4 +245,116 @@ export default function DashboardPage() {
                     </p>
                   </div>
                   <div className={`ml-4 px-3 py-1 rounded-full text-sm font-medium flex-shrink-0 ${
-                    risk.severity === 'critical' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text
+                    risk.severity === 'critical' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                    risk.severity === 'high' ? 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200' :
+                    risk.severity === 'medium' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                    'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                  }`}>
+                    {risk.severity}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <AlertCircle className="h-8 w-8 text-slate-400 mx-auto mb-2" />
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  No risks detected yet. Upload more data to identify potential risks.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Recommendations */}
+        {recommendations.length > 0 && (
+          <div className="mb-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+              💡 AI Recommendations
+            </h2>
+            <div className="space-y-3">
+              {recommendations.slice(0, 5).map((rec, idx) => (
+                <div key={rec.id || idx} className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+                  <div className="flex items-start justify-between mb-2">
+                    <p className="font-semibold text-slate-900 dark:text-white flex-1">
+                      {rec.action}
+                    </p>
+                    <span className={`ml-3 px-2 py-0.5 rounded text-xs font-medium ${
+                      rec.priority === 'critical' ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300' :
+                      rec.priority === 'high' ? 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300' :
+                      rec.priority === 'medium' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300' :
+                      'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                    }`}>
+                      {rec.priority}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-sm text-slate-600 dark:text-slate-400">
+                    <div>
+                      <span className="font-medium">Business Impact: </span>
+                      {rec.businessImpact || 'N/A'}
+                    </div>
+                    <div>
+                      <span className="font-medium">Customer Impact: </span>
+                      {rec.customerImpact || 'N/A'}
+                    </div>
+                  </div>
+                  {rec.supportingQuotes?.length > 0 && (
+                    <div className="mt-2 pl-3 border-l-2 border-blue-300 dark:border-blue-700">
+                      <p className="text-xs italic text-slate-500 dark:text-slate-400">
+                        &ldquo;{rec.supportingQuotes[0]}&rdquo;
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/upload"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+          >
+            📤 Upload Research
+          </Link>
+          <Link
+            href="/insights"
+            className="px-6 py-2 bg-slate-700 dark:bg-slate-600 hover:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-lg font-medium transition-colors"
+          >
+            🔍 View Insights
+          </Link>
+          <Link
+            href="/reports"
+            className="px-6 py-2 bg-slate-700 dark:bg-slate-600 hover:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-lg font-medium transition-colors"
+          >
+            📋 View Reports
+          </Link>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+// ─── Helpers ──────────────────────────────────────────────────
+
+function getRelativeTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} min${diffMins !== 1 ? 's' : ''} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+  return date.toLocaleDateString();
+}
+
+function formatSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
