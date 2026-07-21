@@ -537,7 +537,7 @@ http://localhost:3000
 
 ## Shashank H E
 
-AI Builder • Product Developer • Full Stack Developer
+AI Builder • Product Developer 
 
 **GitHub**
 
