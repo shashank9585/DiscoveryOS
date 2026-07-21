@@ -1,15 +1,8 @@
 /**
  * File Parser - Extracts text from uploaded files
  * Supports PDF, TXT, CSV, DOCX with real parsing libraries.
+ * Uses dynamic imports to prevent Turbopack browser/server bundling conflicts.
  */
-
-import Papa from 'papaparse';
-import mammoth from 'mammoth';
-import * as pdfParseModule from 'pdf-parse';
-
-// Handle ESM/CJS interop for pdf-parse in Next.js Turbopack
-// @ts-ignore
-const pdfParse: any = pdfParseModule.default || pdfParseModule;
 
 export interface ParsedFileContent {
   text: string;
@@ -33,6 +26,10 @@ export interface CSVData {
  */
 export async function parsePDF(buffer: Buffer): Promise<string> {
   try {
+    // Dynamic import prevents Turbopack from bundling browser-specific code
+    const pdfParseModule = await import('pdf-parse');
+    const pdfParse = pdfParseModule.default || pdfParseModule;
+    
     const data = await pdfParse(buffer);
     const text = data.text?.trim();
     if (!text) {
@@ -41,12 +38,12 @@ export async function parsePDF(buffer: Buffer): Promise<string> {
     return text;
   } catch (error: any) {
     console.error('Error parsing PDF:', error);
-    // Fallback: try to read as plain text (some PDFs are text-based)
+    // Fallback: try to read as plain text
     const fallback = buffer.toString('utf-8').trim();
     if (fallback && fallback.length > 50 && !fallback.includes('\x00')) {
       return fallback;
     }
-    throw new Error('Failed to parse PDF file. Ensure the PDF contains selectable text (not scanned images).');
+    throw new Error('Failed to parse PDF file. Ensure the PDF contains selectable text.');
   }
 }
 
@@ -54,19 +51,14 @@ export async function parsePDF(buffer: Buffer): Promise<string> {
  * Parse text file
  */
 export async function parseText(buffer: Buffer): Promise<string> {
-  try {
-    let text = buffer.toString('utf-8');
-    if (!text) {
-      text = buffer.toString('latin1');
-    }
-    if (!text || text.trim().length === 0) {
-      throw new Error('Text file appears to be empty.');
-    }
-    return text;
-  } catch (error: any) {
-    console.error('Error parsing text file:', error);
-    throw new Error('Failed to parse text file');
+  let text = buffer.toString('utf-8');
+  if (!text) {
+    text = buffer.toString('latin1');
   }
+  if (!text || text.trim().length === 0) {
+    throw new Error('Text file appears to be empty.');
+  }
+  return text;
 }
 
 /**
@@ -74,6 +66,8 @@ export async function parseText(buffer: Buffer): Promise<string> {
  */
 export async function parseDOCX(buffer: Buffer): Promise<string> {
   try {
+    // Dynamic import for mammoth
+    const mammoth = await import('mammoth');
     const result = await mammoth.extractRawText({ buffer });
     const text = result.value?.trim();
     if (!text) {
@@ -91,6 +85,8 @@ export async function parseDOCX(buffer: Buffer): Promise<string> {
  */
 export async function parseCSV(buffer: Buffer): Promise<CSVData> {
   try {
+    // Dynamic import for papaparse
+    const Papa = (await import('papaparse')).default;
     const csvText = buffer.toString('utf-8');
 
     return new Promise((resolve, reject) => {
@@ -101,9 +97,7 @@ export async function parseCSV(buffer: Buffer): Promise<CSVData> {
           const headers = results.meta.fields || [];
           const rows = results.data || [];
 
-          // Convert CSV to readable text format for AI analysis
           let text = '';
-
           if (headers.length > 0) {
             text += headers.join(' | ') + '\n';
             text += '─'.repeat(50) + '\n';
@@ -114,11 +108,7 @@ export async function parseCSV(buffer: Buffer): Promise<CSVData> {
             text += rowValues.join(' | ') + '\n';
           }
 
-          resolve({
-            headers,
-            rows,
-            text,
-          });
+          resolve({ headers, rows, text });
         },
         error: (error: any) => {
           reject(new Error(`CSV parsing error: ${error.message}`));
