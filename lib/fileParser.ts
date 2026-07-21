@@ -5,7 +5,6 @@
 
 import Papa from 'papaparse';
 import mammoth from 'mammoth';
-// @ts-expect-error pdf-parse has no type declarations
 import * as pdfParse from 'pdf-parse';
 
 export interface ParsedFileContent {
