@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
-import { getSampleDashboardData } from '@/lib/sampleData';
-import { Send, Loader } from 'lucide-react';
+import { useAppStore } from '@/lib/store';
+import { Send, Loader, AlertCircle } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -13,19 +13,34 @@ interface Message {
 }
 
 export default function QueryAssistantPage() {
-  const data = getSampleDashboardData();
+  const {
+    painPoints,
+    sentimentResults,
+    recommendations,
+    themes,
+    personas,
+    loadFromStorage,
+    hasData,
+  } = useAppStore();
+
+  useEffect(() => {
+    loadFromStorage();
+  }, [loadFromStorage]);
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
       content:
-        "👋 Hi! I'm your Product Intelligence AI Assistant. I can help you answer questions about your customer feedback and product insights.\n\nTry asking me:\n• What should we build next?\n• Why are users leaving?\n• What is our biggest pain point?\n• Compare [segment A] vs [segment B]\n• Show evidence for this recommendation",
+        "👋 Hi! I'm your Product Intelligence AI Assistant. I can help you answer questions about your customer feedback and product insights.\n\nTry asking me:\n• What are our top pain points?\n• What's the sentiment of our customers?\n• What should we build next?\n• Show evidence for this insight\n• Which segment is most affected?",
       timestamp: new Date().toISOString(),
     },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const dataExists = hasData();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -36,12 +51,73 @@ export default function QueryAssistantPage() {
   }, [messages]);
 
   const quickPrompts = [
+    'What are our top pain points?',
+    'What is customer sentiment?',
     'What should we build next?',
-    'Why are customers leaving?',
-    'What is our biggest pain point?',
     'Show me the evidence',
-    'Which segment is most affected?',
+    'Summarize all insights',
   ];
+
+  const generateResponseFromData = (text: string): string => {
+    const lowerText = text.toLowerCase();
+
+    // Check if user is asking about pain points
+    if (lowerText.includes('pain') || lowerText.includes('problem') || lowerText.includes('issue')) {
+      if (painPoints.length === 0) return 'No pain points have been extracted yet. Upload customer feedback documents to identify pain points.';
+      
+      const topPainPoints = painPoints.slice(0, 3);
+      return `📊 **Top Pain Points**:\n\n${topPainPoints
+        .map(
+          (pp, idx) =>
+            `${idx + 1}. **${pp.issue}** (${pp.frequency} mentions, ${Math.round(pp.confidence * 100)}% confidence)`
+        )
+        .join('\n\n')}\n\nThese represent the highest priority items based on customer feedback frequency and confidence.`;
+    }
+
+    // Check if user is asking about sentiment
+    if (lowerText.includes('sentiment') || lowerText.includes('feeling') || lowerText.includes('mood')) {
+      if (sentimentResults.length === 0) return 'No sentiment data available yet. Upload documents to analyze customer sentiment.';
+      
+      const sentiment = sentimentResults[0];
+      return `😊 **Customer Sentiment Analysis**:\n\n✅ Positive: ${sentiment.positivePercent}%\n⚪ Neutral: ${sentiment.neutralPercent}%\n❌ Negative: ${sentiment.negativePercent}%\n\nOverall sentiment is **${sentiment.overall}**, indicating ${sentiment.overall === 'negative' ? 'areas for improvement' : 'positive customer perception'}.`;
+    }
+
+    // Check if user is asking about recommendations
+    if (lowerText.includes('build') || lowerText.includes('next') || lowerText.includes('recommend')) {
+      if (recommendations.length === 0) return 'No recommendations available yet. Upload documents to generate recommendations.';
+      
+      const topRecommendations = recommendations.slice(0, 3);
+      return `🎯 **Top Recommendations**:\n\n${topRecommendations
+        .map(
+          (rec, idx) =>
+            `${idx + 1}. **${rec.action}** (Priority: ${rec.priority})\n   Impact: ${rec.businessImpact}\n   Effort: ${rec.effort}`
+        )
+        .join('\n\n')}\n\nThese are prioritized based on customer feedback and business impact.`;
+    }
+
+    // Check if user is asking for evidence
+    if (lowerText.includes('evidence') || lowerText.includes('quote') || lowerText.includes('proof')) {
+      if (painPoints.length === 0) return 'No evidence available yet. Upload documents to extract supporting evidence.';
+      
+      const topPainPoint = painPoints[0];
+      const evidence = topPainPoint.evidenceQuotes.slice(0, 2);
+      return `📋 **Evidence for: "${topPainPoint.issue}"**\n\n${evidence.map((quote, idx) => `${idx + 1}. "${quote}"`).join('\n\n')}\n\nThis insight is based on ${topPainPoint.frequency} customer mentions with ${Math.round(topPainPoint.confidence * 100)}% confidence.`;
+    }
+
+    // Check if user is asking for summary
+    if (lowerText.includes('summar') || lowerText.includes('overview') || lowerText.includes('all insight')) {
+      if (!dataExists) return 'No data available yet. Upload customer feedback documents to generate insights.';
+      
+      return `📊 **Insights Summary**:\n\n📍 Pain Points: ${painPoints.length} identified\n😊 Sentiment: ${sentimentResults.length > 0 ? sentimentResults[0].overall : 'Not analyzed'}\n🎯 Themes: ${themes.length} extracted\n👥 Personas: ${personas.length} identified\n✅ Recommendations: ${recommendations.length} suggested\n\nUse the Dashboard to explore these insights in detail.`;
+    }
+
+    // Default response
+    if (!dataExists) {
+      return 'I don\'t have any customer data to analyze yet. Please upload documents first to generate insights and I can help you understand them better.';
+    }
+
+    return `I can help you analyze your customer feedback. Here's what I found:\n\n📍 **${painPoints.length} pain points** have been identified\n😊 **Customer sentiment** is ${sentimentResults[0]?.overall || 'unknown'}\n🎯 **${recommendations.length} recommendations** for improvement\n\nTry asking about specific topics like pain points, sentiment, or recommendations!`;
+  };
 
   const handleSendMessage = async (messageText?: string) => {
     const text = messageText || input.trim();
@@ -61,30 +137,7 @@ export default function QueryAssistantPage() {
 
     // Simulate AI response delay
     setTimeout(() => {
-      const responses: Record<string, string> = {
-        default:
-          "Based on your customer feedback analysis:\n\n📊 **Key Insight**: The primary issue is onboarding complexity, mentioned by 34 customers (95% confidence). This directly correlates with your 67% signup drop-off.\n\n✅ **Recommended Action**: Redesign the onboarding flow. Estimated impact: 10-15% churn reduction.\n\n📈 **Business Case**: This improvement could recover ~$50K in monthly revenue.",
-        build:
-          "Based on customer feedback analysis, here are your top 3 priorities:\n\n**1. 🎯 Onboarding Redesign (CRITICAL)**\n- Mentioned by 34 customers\n- 95% confidence\n- Impact: Reduce churn by 10-15%\n- Effort: 3-4 weeks\n\n**2. ⚡ Performance Optimization (HIGH)**\n- 28 customer complaints\n- 88% confidence\n- Impact: +15% session duration\n- Effort: 2-3 weeks\n\n**3. 📱 Mobile Experience (HIGH)**\n- 18 feature requests\n- 82% confidence\n- Impact: +30% revenue potential\n- Effort: 4-6 weeks",
-        churn:
-          "🔴 **Churn Analysis**: Customers are leaving due to:\n\n1. **Onboarding friction (40%)** - Users get stuck during setup\n2. **Performance issues (28%)** - App slowness frustrates users\n3. **Mobile gap (22%)** - Can't use on-the-go\n4. **Feature gaps (10%)** - Limited customization\n\n💡 **Why this matters**: Churn increased 8% → 12% MoM, representing $50-150K revenue at risk.\n\n✅ **Quick win**: Fix onboarding first. Fast to implement, highest impact.",
-        pain:
-          "🔍 **Top Pain Points (Ranked by Frequency & Confidence)**:\n\n1. **Onboarding Complexity** (34 mentions, 95% confidence) - Users struggle with initial setup\n2. **Performance Issues** (28 mentions, 88% confidence) - Application is slow\n3. **Mobile Gap** (18 mentions, 82% confidence) - No mobile app available\n4. **Limited Customization** (12 mentions, 75% confidence) - Customers want more options\n5. **Poor Documentation** (8 mentions, 70% confidence) - API docs are incomplete\n\n📊 These issues affect 80% of new users.",
-        evidence:
-          "📋 **Supporting Evidence**:\n\n**For Onboarding Issues:**\n- \"Getting started is really confusing\" - Enterprise customer\n- \"Took me 2 hours to understand the basics\" - SMB customer\n- \"The onboarding process is overwhelming\" - Startup customer\n\n**Customer Impact**: 67% of signup attempts don't complete\n**Business Impact**: Direct correlation with 12% churn rate\n\n**Confidence**: 95% - This is our most critical insight.",
-      };
-
-      const lowerText = text.toLowerCase();
-      let response = responses.default;
-
-      if (lowerText.includes('build') || lowerText.includes('next'))
-        response = responses.build;
-      else if (lowerText.includes('churn') || lowerText.includes('leaving'))
-        response = responses.churn;
-      else if (lowerText.includes('pain') || lowerText.includes('problem'))
-        response = responses.pain;
-      else if (lowerText.includes('evidence') || lowerText.includes('quote'))
-        response = responses.evidence;
+      const response = generateResponseFromData(text);
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -103,50 +156,65 @@ export default function QueryAssistantPage() {
       <main className="flex-1 overflow-auto bg-background flex flex-col">
         <div className="p-8 flex-1 overflow-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">🤖 AI Query Assistant</h1>
-            <p className="text-muted-foreground">Ask questions about your product and customer insights</p>
+            <h1 className="text-3xl font-bold mb-2 text-slate-900 dark:text-white">🤖 AI Query Assistant</h1>
+            <p className="text-slate-600 dark:text-slate-400">Ask questions about your product and customer insights</p>
           </div>
 
+          {/* Empty State */}
+          {!dataExists && messages.length === 1 && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <AlertCircle className="w-12 h-12 text-slate-400 mb-4" />
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No data to analyze yet</h2>
+              <p className="text-slate-600 dark:text-slate-400 max-w-md">
+                Upload customer feedback documents first, and then I can help you explore and understand the insights!
+              </p>
+            </div>
+          )}
+
           {/* Messages */}
-          <div className="space-y-6 mb-8">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div
-                  className={`max-w-xl px-4 py-3 rounded-lg ${
-                    msg.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted border'
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
-                  <p className="text-xs opacity-50 mt-1">{new Date(msg.timestamp).toLocaleTimeString()}</p>
-                </div>
-              </div>
-            ))}
-            {loading && (
-              <div className="flex justify-start">
-                <div className="bg-muted border px-4 py-3 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Loader className="w-4 h-4 animate-spin" />
-                    <span className="text-sm">Analyzing your data...</span>
+          {(dataExists || messages.length > 1) && (
+            <div className="space-y-6 mb-8">
+              {messages.map((msg) => (
+                <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div
+                    className={`max-w-xl px-4 py-3 rounded-lg ${
+                      msg.role === 'user'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white'
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
+                    <p className={`text-xs ${msg.role === 'user' ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'} mt-1`}>
+                      {new Date(msg.timestamp).toLocaleTimeString()}
+                    </p>
                   </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Loader className="w-4 h-4 animate-spin text-slate-600 dark:text-slate-400" />
+                      <span className="text-sm text-slate-700 dark:text-slate-300">Analyzing your data...</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
         </div>
 
         {/* Quick Prompts */}
-        {messages.length === 1 && (
+        {messages.length === 1 && dataExists && (
           <div className="px-8 mb-6">
-            <p className="text-xs font-medium text-muted-foreground mb-3">Quick questions:</p>
+            <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-3">Quick questions:</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
               {quickPrompts.map((prompt, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSendMessage(prompt)}
-                  className="text-xs px-3 py-2 border rounded-lg hover:bg-muted transition text-left"
+                  className="text-xs px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition text-left text-slate-700 dark:text-slate-300"
                 >
                   {prompt}
                 </button>
@@ -156,7 +224,7 @@ export default function QueryAssistantPage() {
         )}
 
         {/* Input */}
-        <div className="p-8 border-t bg-card">
+        <div className="p-8 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
           <div className="flex gap-3">
             <input
               type="text"
@@ -164,13 +232,13 @@ export default function QueryAssistantPage() {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && !loading && handleSendMessage()}
               placeholder="Ask me anything about your product..."
-              className="flex-1 px-4 py-2 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50"
               disabled={loading}
             />
             <button
               onClick={() => handleSendMessage()}
               disabled={loading || !input.trim()}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 transition-all flex items-center gap-2"
             >
               <Send className="w-4 h-4" />
             </button>

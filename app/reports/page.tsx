@@ -1,13 +1,27 @@
 'use client';
 
-import { useState } from 'react';
-import { getSampleReports, getSampleDashboardData } from '@/lib/sampleData';
-import { Download, Share2, Plus, Eye } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useAppStore } from '@/lib/store';
+import { Download, Share2, Plus, Eye, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ReportsPage() {
-  const reports = getSampleReports();
-  const data = getSampleDashboardData();
+  const {
+    painPoints,
+    sentimentResults,
+    recommendations,
+    documents,
+    loadFromStorage,
+    hasData,
+  } = useAppStore();
+
+  // Load persisted data on mount
+  useEffect(() => {
+    loadFromStorage();
+  }, [loadFromStorage]);
+
   const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const dataExists = hasData();
 
   const reportDescriptions: Record<string, string> = {
     weekly: 'Weekly summary of top insights, sentiment trends, and recommended actions',
@@ -16,171 +30,184 @@ export default function ReportsPage() {
     roadmap: 'Prioritized feature recommendations backed by customer feedback analysis',
   };
 
-  return (
+  // Generate reports from real data
+  const generateReport = (type: string) => {
+    // In production, this would call an API to generate a PDF
+    alert(`Report generation for "${type}" would be implemented with a backend service.`);
+    setShowGenerateModal(false);
+  };
+
+  // Empty state
+  if (!dataExists) {
+    return (
       <main className="flex-1 overflow-auto bg-background">
         <div className="p-8">
-          <div className="mb-8 flex justify-between items-start">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">AI Reports</h1>
-              <p className="text-muted-foreground">Auto-generated executive-ready insights</p>
-            </div>
-            <button
-              onClick={() => setShowGenerateModal(!showGenerateModal)}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 flex items-center gap-2"
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2 text-slate-900 dark:text-white">AI Reports</h1>
+            <p className="text-slate-600 dark:text-slate-400">Auto-generated executive-ready insights</p>
+          </div>
+
+          <div className="flex flex-col items-center justify-center py-20">
+            <AlertCircle className="w-12 h-12 text-slate-400 mb-4" />
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No reports available yet</h2>
+            <p className="text-slate-600 dark:text-slate-400 text-center mb-8">
+              Upload customer feedback documents to generate AI-powered reports.
+            </p>
+            <Link
+              href="/upload"
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
             >
-              <Plus className="w-4 h-4" />
-              Generate Report
-            </button>
-          </div>
-
-          {/* Generate Modal */}
-          {showGenerateModal && (
-            <div className="mb-8 bg-card border rounded-lg p-6">
-              <h2 className="text-lg font-semibold mb-4">Generate New Report</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {['Weekly', 'Executive', 'Risk', 'Roadmap'].map((type) => (
-                  <button
-                    key={type}
-                    className="p-4 border rounded-lg hover:bg-muted transition text-left"
-                  >
-                    <p className="font-medium">{type}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {reportDescriptions[type.toLowerCase()]}
-                    </p>
-                  </button>
-                ))}
-              </div>
-              <div className="mt-6 flex gap-2">
-                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">
-                  Generate
-                </button>
-                <button
-                  onClick={() => setShowGenerateModal(false)}
-                  className="px-4 py-2 border rounded-lg"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Recent Reports */}
-          <div className="space-y-4">
-            {reports.map((report) => (
-              <div key={report.id} className="bg-card border rounded-lg p-6 hover:shadow-md transition">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="font-semibold text-lg">{report.name}</h3>
-                    <p className="text-sm text-muted-foreground">Generated {report.generatedAt}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="px-3 py-1 border rounded text-sm hover:bg-muted flex items-center gap-1">
-                      <Eye className="w-4 h-4" />
-                      View
-                    </button>
-                    <button className="px-3 py-1 border rounded text-sm hover:bg-muted flex items-center gap-1">
-                      <Download className="w-4 h-4" />
-                      PDF
-                    </button>
-                    <button className="px-3 py-1 border rounded text-sm hover:bg-muted flex items-center gap-1">
-                      <Share2 className="w-4 h-4" />
-                      Share
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="p-3 bg-muted rounded">
-                    <p className="text-xs text-muted-foreground">Insights Included</p>
-                    <p className="text-2xl font-bold">{report.insights}</p>
-                  </div>
-                  <div className="p-3 bg-muted rounded">
-                    <p className="text-xs text-muted-foreground">Recommendations</p>
-                    <p className="text-2xl font-bold">{report.recommendations}</p>
-                  </div>
-                  <div className="p-3 bg-muted rounded">
-                    <p className="text-xs text-muted-foreground">Confidence Score</p>
-                    <p className="text-2xl font-bold">{85 + Math.floor(Math.random() * 10)}%</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Sample Report Preview */}
-          <div className="mt-12 bg-card border rounded-lg p-8">
-            <h2 className="text-2xl font-bold mb-6">📄 Sample Report Preview: Weekly Discovery</h2>
-
-            <div className="space-y-6 text-sm">
-              <section>
-                <h3 className="font-bold mb-2">EXECUTIVE SUMMARY</h3>
-                <p className="text-muted-foreground">
-                  This week's analysis reveals a critical trend: customers are increasingly frustrated with the onboarding
-                  experience, resulting in a 67% signup drop-off. Combined with performance complaints, this represents a
-                  high-risk situation affecting retention. Immediate action on onboarding redesign is recommended.
-                </p>
-              </section>
-
-              <section>
-                <h3 className="font-bold mb-2">TOP 5 PAIN POINTS</h3>
-                <ol className="space-y-2 text-muted-foreground">
-                  <li>1. Onboarding complexity (34 mentions, 95% confidence)</li>
-                  <li>2. Performance issues (28 mentions, 88% confidence)</li>
-                  <li>3. Missing mobile app (18 mentions, 82% confidence)</li>
-                  <li>4. Limited customization (12 mentions, 75% confidence)</li>
-                  <li>5. Poor API documentation (8 mentions, 70% confidence)</li>
-                </ol>
-              </section>
-
-              <section>
-                <h3 className="font-bold mb-2">SENTIMENT ANALYSIS</h3>
-                <p className="text-muted-foreground">
-                  Overall sentiment is negative (37% negative, 35% neutral, 28% positive). This represents a 5% decline
-                  from last week, primarily driven by frustrations with onboarding and performance.
-                </p>
-              </section>
-
-              <section>
-                <h3 className="font-bold mb-2">RECOMMENDED ACTIONS (PRIORITY ORDER)</h3>
-                <ol className="space-y-3 text-muted-foreground">
-                  <li>
-                    <strong>1. CRITICAL: Redesign Onboarding Flow</strong> - Confidence: 95%<br />
-                    Impact: Reduce churn by 10-15%, improve NPS by 15-20 points.<br />
-                    Effort: 3-4 weeks | Timeline: START IMMEDIATELY
-                  </li>
-                  <li>
-                    <strong>2. HIGH: Performance Optimization</strong> - Confidence: 88%<br />
-                    Impact: Improve session duration by 15%, reduce bounce by 5%.<br />
-                    Effort: 2-3 weeks | Timeline: Parallel with onboarding
-                  </li>
-                  <li>
-                    <strong>3. HIGH: Mobile Experience</strong> - Confidence: 82%<br />
-                    Impact: Access new market segment, 30% revenue growth potential.<br />
-                    Effort: 4-6 weeks | Timeline: Q2 planning
-                  </li>
-                </ol>
-              </section>
-
-              <section>
-                <h3 className="font-bold mb-2">RISK ASSESSMENT</h3>
-                <p className="text-muted-foreground">
-                  🔴 CRITICAL RISK: Churn trending upward (8% → 12% MoM). If onboarding issues persist, churn could
-                  reach 15% within 30 days, representing ~$150K revenue at risk.
-                </p>
-              </section>
-            </div>
-
-            <div className="mt-8 pt-6 border-t flex gap-4">
-              <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg">
-                Download Full Report (PDF)
-              </button>
-              <button className="px-6 py-2 border rounded-lg">
-                Share with Team
-              </button>
-            </div>
+              Upload Documents
+            </Link>
           </div>
         </div>
       </main>
     );
-}
+  }
 
+  return (
+    <main className="flex-1 overflow-auto bg-background">
+      <div className="p-8">
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold mb-2 text-slate-900 dark:text-white">AI Reports</h1>
+            <p className="text-slate-600 dark:text-slate-400">Auto-generated executive-ready insights</p>
+          </div>
+          <button
+            onClick={() => setShowGenerateModal(!showGenerateModal)}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Generate Report
+          </button>
+        </div>
+
+        {/* Generate Modal */}
+        {showGenerateModal && (
+          <div className="mb-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+            <h2 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Generate New Report</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {['Weekly', 'Executive', 'Risk', 'Roadmap'].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => generateReport(type)}
+                  className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition text-left"
+                >
+                  <p className="font-medium text-slate-900 dark:text-white">{type}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                    {reportDescriptions[type.toLowerCase()]}
+                  </p>
+                </button>
+              ))}
+            </div>
+            <div className="mt-6 flex gap-2">
+              <button
+                onClick={() => alert('Report generation would process in background')}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
+              >
+                Generate
+              </button>
+              <button
+                onClick={() => setShowGenerateModal(false)}
+                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Current Data Summary Report */}
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-8">
+          <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">📄 Current Analysis Report</h2>
+
+          <div className="space-y-6 text-sm text-slate-700 dark:text-slate-300">
+            {/* Executive Summary */}
+            <section>
+              <h3 className="font-bold mb-2 text-slate-900 dark:text-white">EXECUTIVE SUMMARY</h3>
+              <p className="text-slate-600 dark:text-slate-400">
+                {documents.length} document(s) analyzed containing {painPoints.length} identified pain points.{' '}
+                {sentimentResults.length > 0 && (
+                  <>
+                    Overall sentiment is{' '}
+                    {sentimentResults[0].overall === 'negative'
+                      ? 'negative'
+                      : sentimentResults[0].overall === 'positive'
+                        ? 'positive'
+                        : 'neutral'}
+                    . Key findings include opportunities for product improvement and customer satisfaction enhancement.
+                  </>
+                )}
+              </p>
+            </section>
+
+            {/* Top Pain Points */}
+            {painPoints.length > 0 && (
+              <section>
+                <h3 className="font-bold mb-2 text-slate-900 dark:text-white">TOP PAIN POINTS</h3>
+                <ol className="space-y-2 text-slate-600 dark:text-slate-400">
+                  {painPoints.slice(0, 5).map((pp, idx) => (
+                    <li key={pp.id || idx}>
+                      {idx + 1}. {pp.issue} ({pp.frequency} mentions, {Math.round(pp.confidence * 100)}%
+                      confidence)
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
+
+            {/* Sentiment Analysis */}
+            {sentimentResults.length > 0 && (
+              <section>
+                <h3 className="font-bold mb-2 text-slate-900 dark:text-white">SENTIMENT ANALYSIS</h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Sentiment breakdown: {sentimentResults[0].positivePercent}% positive, {sentimentResults[0].neutralPercent}%
+                  neutral, {sentimentResults[0].negativePercent}% negative. This reflects customer perception of the
+                  product and identifies areas for improvement.
+                </p>
+              </section>
+            )}
+
+            {/* Recommendations */}
+            {recommendations.length > 0 && (
+              <section>
+                <h3 className="font-bold mb-2 text-slate-900 dark:text-white">RECOMMENDED ACTIONS (PRIORITY ORDER)</h3>
+                <ol className="space-y-3 text-slate-600 dark:text-slate-400">
+                  {recommendations.slice(0, 3).map((rec, idx) => (
+                    <li key={rec.id || idx}>
+                      <strong>{idx + 1}. {rec.action}</strong> - Priority: {rec.priority.toUpperCase()}
+                      <br />
+                      Business Impact: {rec.businessImpact} | Customer Impact: {rec.customerImpact} | Effort: {rec.effort}
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
+
+            {/* Next Steps */}
+            <section>
+              <h3 className="font-bold mb-2 text-slate-900 dark:text-white">NEXT STEPS</h3>
+              <p className="text-slate-600 dark:text-slate-400">
+                1. Review the identified pain points and prioritize fixes based on frequency and severity<br />
+                2. Use the AI Assistant to ask specific questions about the data<br />
+                3. Upload additional data to refine insights over time<br />
+                4. Track improvements after implementing recommended actions
+              </p>
+            </section>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 flex gap-4">
+            <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all">
+              <Download className="w-4 h-4 inline mr-2" />
+              Download as PDF
+            </button>
+            <button className="px-6 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
+              <Share2 className="w-4 h-4 inline mr-2" />
+              Share Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

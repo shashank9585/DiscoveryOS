@@ -1,6 +1,12 @@
+/**
+ * File Parser - Extracts text from uploaded files
+ * Supports PDF, TXT, CSV, DOCX with real parsing libraries.
+ */
+
 import Papa from 'papaparse';
 import mammoth from 'mammoth';
-
+// @ts-expect-error pdf-parse has no type declarations
+import * as pdfParse from 'pdf-parse';
 
 export interface ParsedFileContent {
   text: string;
@@ -20,22 +26,24 @@ export interface CSVData {
 }
 
 /**
- * Parse PDF file and extract text
-/**
- * Parse PDF file and extract text
- * For MVP, we'll treat PDFs as plain text or skip PDF parsing
+ * Parse PDF file and extract text using pdf-parse
  */
 export async function parsePDF(buffer: Buffer): Promise<string> {
   try {
-    // For MVP, we just convert to string (in production, use pdf-parse)
-    const text = buffer.toString('utf-8');
-    if (text) return text;
-    
-    // Fallback: return generic message
-    return 'PDF file uploaded successfully. (Full PDF parsing requires pdf-parse library)';
+    const data = await pdfParse(buffer);
+    const text = data.text?.trim();
+    if (!text) {
+      throw new Error('No text content could be extracted from this PDF. It may be image-based or encrypted.');
+    }
+    return text;
   } catch (error) {
     console.error('Error parsing PDF:', error);
-    throw new Error('Failed to parse PDF file');
+    // Fallback: try to read as plain text (some PDFs are text-based)
+    const fallback = buffer.toString('utf-8').trim();
+    if (fallback && fallback.length > 50 && !fallback.includes('\x00')) {
+      return fallback;
+    }
+    throw new Error('Failed to parse PDF file. Ensure the PDF contains selectable text (not scanned images).');
   }
 }
 
@@ -44,14 +52,13 @@ export async function parsePDF(buffer: Buffer): Promise<string> {
  */
 export async function parseText(buffer: Buffer): Promise<string> {
   try {
-    // Try UTF-8 first
     let text = buffer.toString('utf-8');
-
-    // If that fails, try latin1
     if (!text) {
       text = buffer.toString('latin1');
     }
-
+    if (!text || text.trim().length === 0) {
+      throw new Error('Text file appears to be empty.');
+    }
     return text;
   } catch (error) {
     console.error('Error parsing text file:', error);
@@ -65,7 +72,11 @@ export async function parseText(buffer: Buffer): Promise<string> {
 export async function parseDOCX(buffer: Buffer): Promise<string> {
   try {
     const result = await mammoth.extractRawText({ buffer });
-    return result.value;
+    const text = result.value?.trim();
+    if (!text) {
+      throw new Error('No text content could be extracted from this DOCX file.');
+    }
+    return text;
   } catch (error) {
     console.error('Error parsing DOCX:', error);
     throw new Error('Failed to parse DOCX file');
@@ -87,16 +98,14 @@ export async function parseCSV(buffer: Buffer): Promise<CSVData> {
           const headers = results.meta.fields || [];
           const rows = results.data || [];
 
-          // Convert CSV to readable text format
+          // Convert CSV to readable text format for AI analysis
           let text = '';
 
-          // Add headers
           if (headers.length > 0) {
             text += headers.join(' | ') + '\n';
             text += '─'.repeat(50) + '\n';
           }
 
-          // Add rows
           for (const row of rows) {
             const rowValues = headers.map((h: string) => (row[h] ? String(row[h]).trim() : ''));
             text += rowValues.join(' | ') + '\n';
@@ -120,10 +129,7 @@ export async function parseCSV(buffer: Buffer): Promise<CSVData> {
 }
 
 /**
- * Chunk text into segments with overlap
- * @param text - Text to chunk
- * @param chunkSize - Size of each chunk in characters (default: 2000)
- * @param overlap - Number of overlapping characters between chunks (default: 200)
+ * Chunk text into segments with overlap for processing
  */
 export function chunkText(
   text: string,
@@ -141,11 +147,7 @@ export function chunkText(
     const end = Math.min(start + chunkSize, text.length);
     const chunk = text.substring(start, end);
     chunks.push(chunk.trim());
-
-    // Move start position forward, accounting for overlap
     start = end - overlap;
-
-    // Prevent infinite loops
     if (start >= text.length) break;
   }
 

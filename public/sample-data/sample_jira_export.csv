@@ -1,0 +1,9 @@
+Issue Key,Summary,Description,Priority,Status,Assignee
+PROJ-1001,Mobile app performance critical,Users report 10+ second load times on iOS and Android devices. Need performance optimization audit.,High,In Progress,john.dev
+PROJ-1002,Add bulk export feature,Customers requesting ability to export 100+ records at once. Current API only handles single record export.,Medium,Backlog,jane.dev
+PROJ-1003,iOS native app needed,Web app doesn't render correctly on mobile. Market analysis shows 60% of usage is mobile. Native app could increase engagement 3x.,Critical,Backlog,mobile-team
+PROJ-1004,Improve onboarding UX,New users take 2+ hours to understand dashboard. Implement guided tour and tooltips.,Medium,In Progress,ux-designer
+PROJ-1005,Slack integration,Customers want real-time Slack notifications for updates. Would increase user engagement.,Medium,Backlog,integrations-team
+PROJ-1006,Fix data sync accuracy,Analytics dashboard shows 15-20% variance from source data. Root cause unknown. Blocking enterprise deals.,Critical,In Progress,data-team
+PROJ-1007,Custom report builder,Enterprise customers need ability to create custom reports. Currently limited to pre-built templates.,High,Backlog,reporting-team
+PROJ-1008,International payment support,50+ customers requesting support for currencies other than USD. Limiting international expansion.,High,Backlog,billing-team

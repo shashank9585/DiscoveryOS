@@ -1,0 +1,9 @@
+Date,Sender,Subject,Body,Labels
+2024-01-15,john@techcorp.com,App is slow on mobile,The app takes 10 seconds to load on my phone. Our sales team is frustrated because they lose deals while waiting.,urgent
+2024-01-16,sarah@retailco.com,Missing feature - bulk export,We need a way to export data in bulk. Currently can only export one record at a time which is killing our productivity.,feature-request
+2024-01-17,mike@startup.io,No mobile app,Your web app doesn't work well on mobile. We need a native iOS app. 60% of our usage is on mobile.,high-priority
+2024-01-18,emma@enterprise.com,Onboarding is confusing,New team members spend 2 hours trying to understand how to use the dashboard. We need better documentation or tutorials.,support
+2024-01-19,david@agency.co,Integration with Slack needed,We manage 10 projects but have to manually update Slack. A Slack integration would save us 5 hours per week.,integration
+2024-01-20,lisa@nonprofit.org,Too expensive for smaller teams,Your pricing is great for enterprises but small nonprofits like us can't afford it. We switched to a competitor.,pricing
+2024-01-21,alex@saas.co,Data accuracy issues,The analytics dashboard shows different numbers than our source system. We can't trust the insights.,critical
+2024-01-22,james@finance.com,Need customizable reports,We can't customize reports to match our internal reporting format. Would need to export and manipulate in Excel.,feature-request

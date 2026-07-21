@@ -34,8 +34,9 @@ export function KPICard({
     red: 'text-red-600 dark:text-red-400',
   };
 
-  // Safe value display
-  const displayValue = value !== null && value !== undefined ? value : '—';
+  // Safe value display - prevent NaN crashes
+  const safeValue = Number.isNaN(value) || value === undefined || value === null ? 0 : value;
+  const displayValue = typeof safeValue === 'number' && !Number.isInteger(safeValue) ? safeValue.toFixed(1) : safeValue;
 
   // Safe trend calculation and display
   const trendValue = trend !== null && trend !== undefined ? trend : null;

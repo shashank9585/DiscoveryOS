@@ -1,0 +1,52 @@
+[
+  {
+    "item_id": 1234567890,
+    "name": "Performance optimization Q1",
+    "status": "Working on it",
+    "priority": "Critical",
+    "due_date": "2024-03-31",
+    "description": "Reduce load times from 10s to under 2s. Customers losing deals due to slow app.",
+    "owner": "John Developer",
+    "impact": "High - Revenue at risk"
+  },
+  {
+    "item_id": 1234567891,
+    "name": "Mobile app native iOS",
+    "status": "Planned",
+    "priority": "Critical",
+    "due_date": "2024-06-30",
+    "description": "60% of usage is mobile. Need native iOS app to improve retention.",
+    "owner": "Mobile Team",
+    "impact": "High - Market expansion"
+  },
+  {
+    "item_id": 1234567892,
+    "name": "Improve onboarding flow",
+    "status": "Working on it",
+    "priority": "High",
+    "due_date": "2024-02-28",
+    "description": "New users spend 2+ hours learning. Implement guided tour and help docs.",
+    "owner": "UX Team",
+    "impact": "Medium - Reduce churn"
+  },
+  {
+    "item_id": 1234567893,
+    "name": "Slack integration beta",
+    "status": "Planned",
+    "priority": "High",
+    "due_date": "2024-03-31",
+    "description": "Real-time notifications to Slack. Critical for remote teams.",
+    "owner": "Integration Team",
+    "impact": "Medium - Engagement boost"
+  },
+  {
+    "item_id": 1234567894,
+    "name": "Fix data sync issues",
+    "status": "In Review",
+    "priority": "Critical",
+    "due_date": "2024-02-15",
+    "description": "Dashboard analytics 15-20% off from source. Blocking enterprise sales.",
+    "owner": "Data Engineering",
+    "impact": "Critical - Enterprise deals"
+  }
+]

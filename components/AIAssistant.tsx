@@ -93,11 +93,29 @@ export function AIAssistant({ isOpen = true, onClose }: AIAssistantProps) {
   };
 
   if (!isVisible) {
-    return null;
+    return (
+      <button
+        onClick={() => setIsVisible(true)}
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg flex items-center justify-center transition-all z-40 hover:scale-110"
+        title="Open AI Assistant"
+      >
+        <MessageCircle className="h-6 w-6" />
+      </button>
+    );
   }
 
   return (
-    <div className="fixed bottom-4 right-4 w-96 h-[600px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-2xl flex flex-col overflow-hidden z-50">
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+        onClick={() => {
+          setIsVisible(false);
+          onClose?.();
+        }}
+      />
+      {/* Modal */}
+      <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-2xl flex flex-col overflow-hidden z-50">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -179,6 +197,7 @@ export function AIAssistant({ isOpen = true, onClose }: AIAssistantProps) {
           ⏱️ Free tier: Wait 20 seconds between requests
         </p>
       </form>
-    </div>
+      </div>
+    </>
   );
 }

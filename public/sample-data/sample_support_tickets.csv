@@ -1,0 +1,9 @@
+Ticket ID,Customer Name,Subject,Description,Priority,Created At
+TKT-5001,TechCorp Inc,Performance issues on mobile,Our sales team uses the app on phones and it's taking 10+ seconds to load. We're losing deals because of this.,Critical,2024-01-15 09:23:00
+TKT-5002,RetailCo Ltd,Need bulk export,We need to export 500+ customer records at once. Currently we can only export one at a time. Is there a bulk export option?,High,2024-01-16 14:45:00
+TKT-5003,StartupIO,No native mobile app,You only have a web app but 60% of our team works from mobile. We need an iOS app to be productive.,Critical,2024-01-17 08:12:00
+TKT-5004,Enterprise Solutions,Onboarding documentation,Our new employees don't understand how to use the dashboard. We need better tutorials or step-by-step guides.,Medium,2024-01-18 11:33:00
+TKT-5005,Agency Pro,Slack integration urgent,Can you add Slack integration? We have 10 projects and manually updating Slack is taking 5 hours per week.,High,2024-01-19 16:22:00
+TKT-5006,NonProfit Org,Pricing too high,Your pricing works for enterprises but it's too expensive for smaller teams like ours. We had to switch to a competitor.,Medium,2024-01-20 10:15:00
+TKT-5007,Finance Corp,Data sync accuracy,The numbers in your dashboard don't match our source data. The discrepancy is 15-20%. We can't use the analytics.,Critical,2024-01-21 13:41:00
+TKT-5008,Corporate Services,Custom reporting,We need to create custom reports that match our internal format. The pre-built templates don't work for our team.,High,2024-01-22 09:58:00
