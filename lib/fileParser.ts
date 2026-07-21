@@ -5,7 +5,7 @@
 
 import Papa from 'papaparse';
 import mammoth from 'mammoth';
-import * as pdfParse from 'pdf-parse';
+import pdfParse from 'pdf-parse';
 
 export interface ParsedFileContent {
   text: string;
@@ -26,10 +26,11 @@ export interface CSVData {
 
 /**
  * Parse PDF file and extract text using pdf-parse
- */
+*/
+   
 export async function parsePDF(buffer: Buffer): Promise<string> {
   try {
-    const data = await pdfParse(buffer);
+    const data = await (pdfParse as any)(buffer);
     const text = data.text?.trim();
     if (!text) {
       throw new Error('No text content could be extracted from this PDF. It may be image-based or encrypted.');
