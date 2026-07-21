@@ -28,7 +28,7 @@ export async function parsePDF(buffer: Buffer): Promise<string> {
   try {
     // Dynamic import prevents Turbopack from bundling browser-specific code
     const pdfParseModule = await import('pdf-parse');
-    const pdfParse = pdfParseModule.default || pdfParseModule;
+    const pdfParse = (pdfParseModule as any).default || pdfParseModule;
     
     const data = await pdfParse(buffer);
     const text = data.text?.trim();
@@ -66,8 +66,10 @@ export async function parseText(buffer: Buffer): Promise<string> {
  */
 export async function parseDOCX(buffer: Buffer): Promise<string> {
   try {
-    // Dynamic import for mammoth
-    const mammoth = await import('mammoth');
+    // Dynamic import for mammoth with type cast
+    const mammothModule = await import('mammoth');
+    const mammoth = (mammothModule as any).default || mammothModule;
+    
     const result = await mammoth.extractRawText({ buffer });
     const text = result.value?.trim();
     if (!text) {
@@ -85,8 +87,9 @@ export async function parseDOCX(buffer: Buffer): Promise<string> {
  */
 export async function parseCSV(buffer: Buffer): Promise<CSVData> {
   try {
-    // Dynamic import for papaparse
-    const Papa = (await import('papaparse')).default;
+    // Dynamic import for papaparse with type cast
+    const PapaModule = await import('papaparse');
+    const Papa = (PapaModule as any).default || PapaModule;
     const csvText = buffer.toString('utf-8');
 
     return new Promise((resolve, reject) => {
