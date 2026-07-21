@@ -5,7 +5,11 @@
 
 import Papa from 'papaparse';
 import mammoth from 'mammoth';
-import pdfParse from 'pdf-parse';
+import * as pdfParseModule from 'pdf-parse';
+
+// Handle ESM/CJS interop for pdf-parse in Next.js Turbopack
+// @ts-ignore
+const pdfParse: any = pdfParseModule.default || pdfParseModule;
 
 export interface ParsedFileContent {
   text: string;
@@ -26,17 +30,16 @@ export interface CSVData {
 
 /**
  * Parse PDF file and extract text using pdf-parse
-*/
-   
+ */
 export async function parsePDF(buffer: Buffer): Promise<string> {
   try {
-    const data = await (pdfParse as any)(buffer);
+    const data = await pdfParse(buffer);
     const text = data.text?.trim();
     if (!text) {
       throw new Error('No text content could be extracted from this PDF. It may be image-based or encrypted.');
     }
     return text;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error parsing PDF:', error);
     // Fallback: try to read as plain text (some PDFs are text-based)
     const fallback = buffer.toString('utf-8').trim();
@@ -60,7 +63,7 @@ export async function parseText(buffer: Buffer): Promise<string> {
       throw new Error('Text file appears to be empty.');
     }
     return text;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error parsing text file:', error);
     throw new Error('Failed to parse text file');
   }
@@ -77,7 +80,7 @@ export async function parseDOCX(buffer: Buffer): Promise<string> {
       throw new Error('No text content could be extracted from this DOCX file.');
     }
     return text;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error parsing DOCX:', error);
     throw new Error('Failed to parse DOCX file');
   }
@@ -122,7 +125,7 @@ export async function parseCSV(buffer: Buffer): Promise<CSVData> {
         },
       });
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error parsing CSV:', error);
     throw new Error('Failed to parse CSV file');
   }
@@ -202,7 +205,7 @@ export async function parseFile(
         extractedAt: new Date().toISOString(),
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error parsing file:', error);
     throw error;
   }
